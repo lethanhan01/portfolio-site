@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import colors from '../../constants/colors';
-import twitterIcon from '../../assets/pictures/contact-twitter.png';
 import ghIcon from '../../assets/pictures/contact-gh.png';
 import inIcon from '../../assets/pictures/contact-in.png';
+import twitterIcon from '../../assets/pictures/contact-twitter.png';
 import ResumeDownload from './ResumeDownload';
 
 export interface ContactProps {}
 
-// function to validate email
 const validateEmail = (email: string) => {
     const re =
         // eslint-disable-next-line
@@ -30,13 +29,12 @@ const SocialBox: React.FC<SocialBoxProps> = ({ link, icon }) => {
     );
 };
 
-const Contact: React.FC<ContactProps> = (props) => {
+const Contact: React.FC<ContactProps> = () => {
     const [company, setCompany] = useState('');
     const [email, setEmail] = useState('');
     const [name, setName] = useState('');
     const [message, setMessage] = useState('');
     const [isFormValid, setIsFormValid] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
     const [formMessage, setFormMessage] = useState('');
     const [formMessageColor, setFormMessageColor] = useState('');
 
@@ -48,65 +46,32 @@ const Contact: React.FC<ContactProps> = (props) => {
         }
     }, [email, name, message]);
 
-    async function submitForm() {
+    const submitForm = () => {
         if (!isFormValid) {
             setFormMessage('Form unable to validate, please try again.');
             setFormMessageColor('red');
             return;
         }
-        try {
-            setIsLoading(true);
-            const res = await fetch(
-                'https://api.henryheffernan.com/api/contact',
-                {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        company,
-                        email,
-                        name,
-                        message,
-                    }),
-                }
-            );
-            // the response will be either {success: true} or {success: false, error: message}
-            const data = (await res.json()) as
-                | {
-                      success: false;
-                      error: string;
-                  }
-                | { success: true };
-            if (data.success) {
-                setFormMessage(`Message successfully sent. Thank you ${name}!`);
-                setCompany('');
-                setEmail('');
-                setName('');
-                setMessage('');
-                setFormMessageColor(colors.blue);
-                setIsLoading(false);
-            } else {
-                setFormMessage(data.error);
-                setFormMessageColor(colors.red);
-                setIsLoading(false);
-            }
-        } catch (e) {
-            setFormMessage(
-                'There was an error sending your message. Please try again.'
-            );
-            setFormMessageColor(colors.red);
-            setIsLoading(false);
-        }
-    }
+
+        const subject = `Portfolio contact from ${name}`;
+        const body = `Name: ${name}\nEmail: ${email}\nCompany: ${company || 'N/A'}\n\nMessage:\n${message}`;
+        window.location.href = `mailto:nguyenhuybn253@gmail.com?subject=${encodeURIComponent(
+            subject
+        )}&body=${encodeURIComponent(body)}`;
+
+        setFormMessage('Opening your email client...');
+        setFormMessageColor(colors.blue);
+    };
 
     useEffect(() => {
         if (formMessage.length > 0) {
-            setTimeout(() => {
+            const timeout = setTimeout(() => {
                 setFormMessage('');
                 setFormMessageColor('');
             }, 4000);
+            return () => clearTimeout(timeout);
         }
+        return undefined;
     }, [formMessage]);
 
     return (
@@ -116,33 +81,33 @@ const Contact: React.FC<ContactProps> = (props) => {
                 <div style={styles.socials}>
                     <SocialBox
                         icon={ghIcon}
-                        link={'https://github.com/henryjeff'}
+                        link={'https://github.com/lethanhan01'}
                     />
                     <SocialBox
                         icon={inIcon}
-                        link={'https://www.linkedin.com/in/henryheffernan/'}
+                        link={
+                            'https://www.linkedin.com/in/thanh-an-le-6024861b9'
+                        }
                     />
                     <SocialBox
                         icon={twitterIcon}
-                        link={'https://twitter.com/henryheffernan'}
+                        link={'https://x.com/an_lethanh'}
                     />
                 </div>
             </div>
             <div className="text-block">
                 <p>
-                    I am currently employed, however if you have any
-                    opportunities, feel free to reach out - I would love to
-                    chat! You can reach me via my personal email, or fill out
-                    the form below!
+                    If you have any opportunities, feel free to reach out — I
+                    would love to chat! You can reach me via my personal email,
+                    or fill out the form below.
                 </p>
                 <br />
                 <p>
-                    <b>Email: </b>
-                    <a href="mailto:henryheffernan@gmail.com">
-                        henryheffernan@gmail.com
+                    <b>Email:</b>{' '}
+                    <a href="mailto:nguyenhuybn253@gmail.com">
+                        nguyenhuybn253@gmail.com
                     </a>
                 </p>
-
                 <div style={styles.form}>
                     <label>
                         <p>
@@ -181,7 +146,7 @@ const Contact: React.FC<ContactProps> = (props) => {
                     </label>
                     <input
                         style={styles.formItem}
-                        type="company"
+                        type="text"
                         name="company"
                         placeholder="Company"
                         value={company}
@@ -205,14 +170,10 @@ const Contact: React.FC<ContactProps> = (props) => {
                             className="site-button"
                             style={styles.button}
                             type="submit"
-                            disabled={!isFormValid || isLoading}
+                            disabled={!isFormValid}
                             onMouseDown={submitForm}
                         >
-                            {!isLoading ? (
-                                'Send Message'
-                            ) : (
-                                <p className="loading">Sending</p>
-                            )}
+                            Send Message
                         </button>
                         <div style={styles.formInfo}>
                             <p
@@ -225,7 +186,7 @@ const Contact: React.FC<ContactProps> = (props) => {
                                     <sub>
                                         {formMessage
                                             ? `${formMessage}`
-                                            : ' All messages get forwarded straight to my personal email'}
+                                            : ' Messages open your email client'}
                                     </sub>
                                 </b>
                             </p>
@@ -233,8 +194,7 @@ const Contact: React.FC<ContactProps> = (props) => {
                                 <sub>
                                     {!isFormValid ? (
                                         <span>
-                                            <b style={styles.star}>*</b> =
-                                            required
+                                            <b style={styles.star}></b>
                                         </span>
                                     ) : (
                                         '\xa0'
@@ -245,7 +205,7 @@ const Contact: React.FC<ContactProps> = (props) => {
                     </div>
                 </div>
             </div>
-            <ResumeDownload altText="Need a copy of my Resume?" />
+            <ResumeDownload altText="Need a copy of my CV?" />
         </div>
     );
 };
@@ -269,7 +229,6 @@ const styles: StyleSheetCSS = {
     },
     formInfo: {
         textAlign: 'right',
-
         flexDirection: 'column',
         alignItems: 'flex-end',
         paddingLeft: 24,

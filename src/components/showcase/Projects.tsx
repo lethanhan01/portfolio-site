@@ -67,36 +67,34 @@ const ProjectBox: React.FC<ProjectBoxProps> = ({
 const Projects: React.FC<ProjectsProps> = (props) => {
     return (
         <div className="site-page-content">
-            <h1>Projects</h1>
-            <h3>& Hobbies</h3>
+            <h1>Portfolio</h1>
+            <h3>Highlights</h3>
             <br />
             <p>
-                Click on one of the areas below to check out some of my favorite
-                projects I've done in that field. I spent a lot of time to
-                include a lot of visuals and interactive media to showcase each
-                project. Enjoy!
+                Explore my selected projects, academic coursework, and language
+                proficiency.
             </p>
             <br />
             <div style={styles.projectLinksContainer}>
                 <ProjectBox
                     icon={software}
                     iconStyle={styles.computerIcon}
-                    title="Software"
-                    subtitle="PROJECTS"
+                    title="Projects"
+                    subtitle="SOFTWARE"
                     route="software"
                 />
                 <ProjectBox
                     icon={music}
                     iconStyle={styles.musicIcon}
-                    title="Music"
-                    subtitle="VENTURES"
+                    title="Coursework"
+                    subtitle="ACADEMIC"
                     route="music"
                 />
                 <ProjectBox
                     icon={art}
                     iconStyle={styles.artIcon}
-                    title="Art"
-                    subtitle="ENDEAVORS"
+                    title="Languages"
+                    subtitle="PROFICIENCY"
                     route="art"
                 />
             </div>
