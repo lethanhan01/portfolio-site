@@ -6,7 +6,6 @@ export interface VerticalNavbarProps {}
 
 const VerticalNavbar: React.FC<VerticalNavbarProps> = (props) => {
     const location = useLocation();
-    const [projectsExpanded, setProjectsExpanded] = useState(false);
     const [isHome, setIsHome] = useState(false);
 
     const navigate = useNavigate();
@@ -15,11 +14,6 @@ const VerticalNavbar: React.FC<VerticalNavbarProps> = (props) => {
     };
 
     useEffect(() => {
-        if (location.pathname.includes('/projects')) {
-            setProjectsExpanded(true);
-        } else {
-            setProjectsExpanded(false);
-        }
         if (location.pathname === '/') {
             setIsHome(true);
         } else {
