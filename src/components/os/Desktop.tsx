@@ -11,6 +11,7 @@ import DesktopShortcut, { DesktopShortcutProps } from './DesktopShortcut';
 import Scrabble from '../applications/Scrabble';
 import { IconName } from '../../assets/icons';
 import Credits from '../applications/Credits';
+import Bliss from '../../assets/Wallpapers/Bliss.png';
 
 export interface DesktopProps {}
 
@@ -261,6 +262,10 @@ const styles: StyleSheetCSS = {
         minHeight: '100%',
         flex: 1,
         backgroundColor: Colors.turquoise,
+        backgroundImage: `url(${Bliss})`,
+        backgroundSize: 'cover',
+        backgroundRepeat: 'no-repeat',
+        backgroundPosition: 'center',
     },
     shutdown: {
         minHeight: '100%',

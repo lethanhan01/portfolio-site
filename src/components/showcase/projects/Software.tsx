@@ -7,7 +7,7 @@ const SoftwareProjects: React.FC<SoftwareProjectsProps> = () => {
     return (
         <div className="site-page-content">
             <h1>Projects</h1>
-            <h3>Software</h3>
+            <h3>Projects</h3>
             <br />
             <p>
                 Selected projects that highlight my full-stack and backend

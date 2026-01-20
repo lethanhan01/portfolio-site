@@ -38,42 +38,32 @@ const VerticalNavbar: React.FC<VerticalNavbarProps> = (props) => {
             <div style={styles.links}>
                 <Link containerStyle={styles.link} to="" text="HOME" />
                 <Link containerStyle={styles.link} to="about" text="ABOUT" />
+                <Link containerStyle={styles.link} to="skills" text="SKILLS" />
+                <Link
+                    containerStyle={styles.link}
+                    to="certifications"
+                    text="CERTIFICATIONS"
+                />
                 <Link
                     containerStyle={styles.link}
                     to="experience"
                     text="EXPERIENCE"
                 />
                 <Link
-                    containerStyle={Object.assign(
-                        {},
-                        styles.link,
-                        projectsExpanded && styles.expandedLink
-                    )}
-                    to="projects"
+                    containerStyle={styles.link}
+                    to="projects/software"
                     text="PROJECTS"
                 />
-                {
-                    // if current path contains projects
-                    projectsExpanded && (
-                        <div style={styles.insetLinks}>
-                            <Link
-                                containerStyle={styles.insetLink}
-                                to="projects/software"
-                                text="SOFTWARE"
-                            />
-                            <Link
-                                containerStyle={styles.insetLink}
-                                to="projects/music"
-                                text="MUSIC"
-                            />
-                            <Link
-                                containerStyle={styles.insetLink}
-                                to="projects/art"
-                                text="ART"
-                            />
-                        </div>
-                    )
-                }
+                <Link
+                    containerStyle={styles.link}
+                    to="projects/music"
+                    text="RELEVANT COURSEWORK"
+                />
+                <Link
+                    containerStyle={styles.link}
+                    to="projects/art"
+                    text="LANGUAGE"
+                />
                 <Link
                     containerStyle={styles.link}
                     to="contact"
@@ -98,7 +88,8 @@ const styles: StyleSheetCSS = {
         padding: 48,
         boxSizing: 'border-box',
         position: 'fixed',
-        overflow: 'hidden',
+        overflowY: 'auto',
+        overflowX: 'hidden',
     },
     header: {
         flexDirection: 'column',
@@ -117,17 +108,6 @@ const styles: StyleSheetCSS = {
     },
     link: {
         marginBottom: 32,
-    },
-    expandedLink: {
-        marginBottom: 16,
-    },
-    insetLinks: {
-        flexDirection: 'column',
-        marginLeft: 32,
-        marginBottom: 16,
-    },
-    insetLink: {
-        marginBottom: 8,
     },
     links: {
         flexDirection: 'column',
