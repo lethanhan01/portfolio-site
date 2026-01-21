@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Colors from '../../constants/colors';
 import { Icon } from '../general';
+import startButton from '../../assets/Frame/start-button.png';
+import startButtonActive from '../../assets/Frame/start-button-active.png';
 // import { } from '../general';
 // import Home from '../site/Home';
 // import Window from './Window';
@@ -120,29 +122,25 @@ const Toolbar: React.FC<ToolbarProps> = ({
             )}
             <div style={styles.toolbarInner}>
                 <div style={styles.toolbar}>
-                    <div
+                    <button
+                        type="button"
                         style={Object.assign(
                             {},
                             styles.startContainerOuter,
-                            startWindowOpen && styles.activeTabOuter
+                            startWindowOpen && styles.startContainerOuterActive
                         )}
                         onMouseDown={toggleStartWindow}
+                        aria-label="Start"
                     >
-                        <div
-                            style={Object.assign(
-                                {},
-                                styles.startContainer,
-                                startWindowOpen && styles.activeTabInner
-                            )}
-                        >
+                        <span style={styles.startContent}>
                             <Icon
                                 size={18}
                                 icon="windowsStartIcon"
                                 style={styles.startIcon}
                             />
-                            <p className="toolbar-text ">Start</p>
-                        </div>
-                    </div>
+                            <span style={styles.startLabel}>Start</span>
+                        </span>
+                    </button>
                     <div style={styles.toolbarTabsContainer}>
                         {Object.keys(windows).map((key) => {
                             return (
@@ -195,10 +193,15 @@ const styles: StyleSheetCSS = {
         position: 'absolute',
         bottom: 0,
         width: '100%',
-        height: 32,
-        background: Colors.lightGray,
-        borderTop: `1px solid ${Colors.lightGray}`,
+        height: 30,
+        backgroundColor: '#1e5aa6',
+        backgroundImage:
+            'linear-gradient(180deg, rgba(56,136,233,1) 0%, rgba(56,136,233,1) 30%, rgba(109,178,255,0.7) 60%, rgba(0,0,0,0.22) 100%)',
+        boxShadow:
+            'inset 0px 10px 8px rgba(56,136,233,1), inset 0px -5px 7px rgba(0,0,0,0.22), inset 0px 4px 4px rgba(109,178,255,0.7)',
+        borderTop: `1px solid ${Colors.white}`,
         zIndex: 100000,
+        display: 'flex',
     },
     verticalStartContainer: {
         // width: 30,
@@ -243,9 +246,10 @@ const styles: StyleSheetCSS = {
         background: Colors.lightGray,
     },
     activeTabOuter: {
-        border: `1px solid ${Colors.black}`,
-        borderBottomColor: Colors.white,
-        borderRightColor: Colors.white,
+        border: '1px solid rgba(12, 64, 150, 0.75)',
+        borderBottomColor: 'rgba(255,255,255,0.6)',
+        borderRightColor: 'rgba(255,255,255,0.6)',
+        backgroundColor: '#2f6edc',
     },
     startWindowInner: {
         border: `1px solid ${Colors.lightGray}`,
@@ -277,15 +281,13 @@ const styles: StyleSheetCSS = {
         borderTop: `1px solid ${Colors.darkGray}`,
     },
     activeTabInner: {
-        border: `1px solid ${Colors.darkGray}`,
-        borderBottomColor: Colors.lightGray,
-        borderRightColor: Colors.lightGray,
-        backgroundImage: `linear-gradient(45deg, white 25%, transparent 25%),
-        linear-gradient(-45deg,  white 25%, transparent 25%),
-        linear-gradient(45deg, transparent 75%,  white 75%),
-        linear-gradient(-45deg, transparent 75%,  white 75%)`,
-        backgroundSize: `4px 4px`,
-        backgroundPosition: `0 0, 0 2px, 2px -2px, -2px 0px`,
+        border: '1px solid rgba(255,255,255,0.45)',
+        borderBottomColor: 'rgba(0,0,0,0.25)',
+        borderRightColor: 'rgba(0,0,0,0.25)',
+        backgroundImage:
+            'linear-gradient(180deg, rgba(114,174,255,0.95) 0%, rgba(65,130,236,0.98) 55%, rgba(36,96,210,1) 100%)',
+        boxShadow:
+            'inset 0px 2px 4px rgba(255,255,255,0.4), inset 0px -2px 4px rgba(0,0,0,0.2)',
         pointerEvents: 'none',
     },
     tabContainerOuter: {
@@ -295,74 +297,112 @@ const styles: StyleSheetCSS = {
         marginRight: 4,
         boxSizing: 'border-box',
         cursor: 'pointer',
-        border: `1px solid ${Colors.white}`,
-        borderBottomColor: Colors.black,
-        borderRightColor: Colors.black,
+        border: '1px solid rgba(30, 64, 175, 0.5)',
+        borderRadius: 4,
+        height: 28,
+        alignItems: 'center',
+        backgroundColor: '#3b82f6',
+        boxShadow:
+            '2px 0px 2px rgba(0,0,0,0.07), inset 1.5px 1.5px 1px rgba(255,255,255,0.25), inset 0px 4px 8px rgba(255,255,255,0.15), inset -2px -2px 2px rgba(0,0,0,0.10)',
     },
     tabContainer: {
         display: 'flex',
-        border: `1px solid ${Colors.lightGray}`,
-        borderBottomColor: Colors.darkGray,
-        borderRightColor: Colors.darkGray,
+        border: 'none',
         alignItems: 'center',
         paddingLeft: 4,
         flex: 1,
+        height: '100%',
+        minWidth: 0,
     },
     tabIcon: {
-        marginRight: 6,
-    },
-    startContainer: {
-        alignItems: 'center',
-        flexShrink: 1,
-        // background: 'red',
-        border: `1px solid ${Colors.lightGray}`,
-        borderBottomColor: Colors.darkGray,
-        borderRightColor: Colors.darkGray,
-        padding: 1,
-        paddingLeft: 5,
-        paddingRight: 5,
+        marginRight: 8,
     },
     startContainerOuter: {
-        marginLeft: 3,
+        marginLeft: 0,
         boxSizing: 'border-box',
         cursor: 'pointer',
-        border: `1px solid ${Colors.white}`,
-        borderBottomColor: Colors.black,
-        borderRightColor: Colors.black,
+        border: 'none',
+        padding: 0,
+        backgroundColor: 'transparent',
+        width: 96,
+        height: 28,
+        backgroundImage: `url(${startButton})`,
+        backgroundRepeat: 'no-repeat',
+        backgroundSize: '100% 100%',
+        backgroundPosition: 'center',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 1,
+    },
+    startContainerOuterActive: {
+        backgroundImage: `url(${startButtonActive})`,
+    },
+    startContent: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 6,
+        paddingLeft: 0,
+        width: '100%',
+    },
+    startLabel: {
+        fontSize: 16,
+        fontFamily: 'Tahoma',
+        fontWeight: 550,
+        fontStyle: 'italic',
+        color: Colors.white,
+        textShadow: '1px 1px 0px rgba(0,0,0,0.6)',
+        userSelect: 'none',
+        letterSpacing: -0.2,
+        lineHeight: '12px',
+        textTransform: 'lowercase',
     },
     toolbarTabsContainer: {
         // background: 'blue',
         flex: 1,
         marginLeft: 4,
         marginRight: 4,
+        display: 'flex',
+        alignItems: 'center',
+        height: '100%',
     },
     startIcon: {
-        marginRight: 4,
+        marginRight: 0,
     },
     toolbarInner: {
         borderTop: `1px solid ${Colors.white}`,
-
         alignItems: 'center',
         flex: 1,
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'row',
     },
     toolbar: {
         flexGrow: 1,
         width: '100%',
+        height: '100%',
+        alignItems: 'center',
+        display: 'flex',
     },
     time: {
         flexShrink: 1,
-        width: 86,
-        height: 24,
+        width: 92,
+        height: 22,
         boxSizing: 'border-box',
-        marginRight: 4,
-        paddingLeft: 4,
-        paddingRight: 4,
+        marginRight: 6,
+        paddingLeft: 6,
+        paddingRight: 6,
+        backgroundColor: '#0ea5e9',
         border: `1px solid ${Colors.white}`,
         borderTopColor: Colors.darkGray,
-
+        boxShadow:
+            '-2px 0px 1px rgba(0,0,0,0.5), inset -2px -4px 15px rgba(0,0,0,0.25), inset 5px 5px 5px rgba(22,172,240,1)',
         justifyContent: 'space-between',
         alignItems: 'center',
         borderLeftColor: Colors.darkGray,
+        marginTop: 2,
+        display: 'flex',
     },
     volumeIcon: {
         cursor: 'pointer',
@@ -371,6 +411,9 @@ const styles: StyleSheetCSS = {
     tabText: {
         fontSize: 14,
         fontFamily: 'MSSerif',
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
     },
     timeText: {
         fontSize: 12,

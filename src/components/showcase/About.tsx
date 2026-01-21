@@ -34,9 +34,20 @@ const About: React.FC<AboutProps> = (props) => {
                 <h3>Education</h3>
                 <br />
                 <p>
-                    Hanoi University of Science and Technology (HUST) — Bachelor
-                    of Vietnam-Japan Information Technology Program (HEDSPI)
+                    Hanoi University of Science and Technology (HUST) 
+                    <br />
                     (Sept. 2023 – Sept. 2027)
+                    <br />
+                    Bachelor of Vietnam-Japan Information Technology Program (HEDSPI)
+                    
+                    <br />
+                </p>
+                <p>
+                    Bac Ninh Specialized High School
+                    <br />
+                    (Sept. 2020 – May 2023) 
+                    <br />
+                    Specialized in Mathematics
                 </p>
                 <br />
                 <p>
