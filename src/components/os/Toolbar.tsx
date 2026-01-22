@@ -33,6 +33,8 @@ const Toolbar: React.FC<ToolbarProps> = ({
     const [startWindowOpen, setStartWindowOpen] = useState(false);
     const lastClickInside = useRef(false);
 
+    const [startLogoFailed, setStartLogoFailed] = useState(false);
+
     const [lastActive, setLastActive] = useState('');
 
     useEffect(() => {
@@ -133,11 +135,20 @@ const Toolbar: React.FC<ToolbarProps> = ({
                         aria-label="Start"
                     >
                         <span style={styles.startContent}>
-                            <Icon
-                                size={18}
-                                icon="windowsStartIcon"
-                                style={styles.startIcon}
-                            />
+                            {!startLogoFailed ? (
+                                <img
+                                    src="/start-logo.png"
+                                    alt="Start"
+                                    style={styles.startLogo}
+                                    onError={() => setStartLogoFailed(true)}
+                                />
+                            ) : (
+                                <Icon
+                                    size={18}
+                                    icon="windowsStartIcon"
+                                    style={styles.startIcon}
+                                />
+                            )}
                             <span style={styles.startLabel}>Start</span>
                         </span>
                     </button>
@@ -369,6 +380,12 @@ const styles: StyleSheetCSS = {
     },
     startIcon: {
         marginRight: 0,
+    },
+    startLogo: {
+        width: 18,
+        height: 18,
+        objectFit: 'contain',
+        display: 'block',
     },
     toolbarInner: {
         borderTop: `1px solid ${Colors.white}`,
