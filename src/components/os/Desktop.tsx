@@ -138,6 +138,16 @@ const Desktop: React.FC<DesktopProps> = (props) => {
         });
     }, []);
 
+    const minimizeAllWindows = useCallback(() => {
+        setWindows((prevWindows) => {
+            const newWindows: DesktopWindows = { ...prevWindows };
+            Object.keys(newWindows).forEach((key) => {
+                newWindows[key] = { ...newWindows[key], minimized: true };
+            });
+            return newWindows;
+        });
+    }, []);
+
     const getHighestZIndex = useCallback((): number => {
         let highestZIndex = 0;
         Object.keys(windows).forEach((key) => {
@@ -245,7 +255,9 @@ const Desktop: React.FC<DesktopProps> = (props) => {
             </div>
             <Toolbar
                 windows={windows}
+                shortcuts={shortcuts}
                 toggleMinimize={toggleMinimize}
+                minimizeAll={minimizeAllWindows}
                 shutdown={startShutdown}
             />
         </div>

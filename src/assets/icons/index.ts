@@ -18,6 +18,12 @@ import windowExplorerIcon from './windowExplorerIcon.png';
 import windowsStartIcon from './windowsStartIcon.png';
 import scrabbleIcon from './scrabbleIcon.png';
 import close from './close.png';
+import contactGithub from './contact-gh.png';
+import contactLinkedin from './contact-in.png';
+import contactInstagram from './contact-twitter.png';
+import myResume from './my-resume.png';
+import logoffButton from './logoff-button.png';
+import shutdownButton from './shutdown-button.png';
 
 const icons = {
     windowResize: windowResize,
@@ -38,6 +44,12 @@ const icons = {
     windowExplorerIcon: windowExplorerIcon,
     windowsStartIcon: windowsStartIcon,
     trailIcon: trailIcon,
+    contactGithub: contactGithub,
+    contactLinkedin: contactLinkedin,
+    contactInstagram: contactInstagram,
+    myResume: myResume,
+    logoffButton: logoffButton,
+    shutdownButton: shutdownButton,
 };
 
 export type IconName = keyof typeof icons;
