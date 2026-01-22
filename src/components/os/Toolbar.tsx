@@ -3,19 +3,25 @@ import Colors from '../../constants/colors';
 import { Icon } from '../general';
 import startButton from '../../assets/Frame/start-button.png';
 import startButtonActive from '../../assets/Frame/start-button-active.png';
+import ResumePdf from '../../assets/resume/LeThanhAn_CV.pdf';
+import startAvatar from '../../assets/profile-pics/start-avatar.png';
 // import { } from '../general';
 // import Home from '../site/Home';
 // import Window from './Window';
 
 export interface ToolbarProps {
     windows: DesktopWindows;
+    shortcuts: Array<{ shortcutName: string; icon: any; onOpen?: () => void }>;
     toggleMinimize: (key: string) => void;
+    minimizeAll: () => void;
     shutdown: () => void;
 }
 
 const Toolbar: React.FC<ToolbarProps> = ({
     windows,
+    shortcuts,
     toggleMinimize,
+    minimizeAll,
     shutdown,
 }) => {
     const getTime = () => {
@@ -35,6 +41,27 @@ const Toolbar: React.FC<ToolbarProps> = ({
 
     const [startLogoFailed, setStartLogoFailed] = useState(false);
 
+    const [viewportWidth, setViewportWidth] = useState<number>(
+        typeof window !== 'undefined' ? window.innerWidth : 1024
+    );
+
+    const isCompact = viewportWidth <= 420;
+    const isTablet = viewportWidth > 420 && viewportWidth <= 900;
+
+    const [hoveredStartItem, setHoveredStartItem] = useState<string | null>(
+        null
+    );
+
+    const onOpenExternal = (url: string) => {
+        window.open(url, '_blank', 'noopener,noreferrer');
+        setStartWindowOpen(false);
+    };
+
+    const onOpenResume = () => {
+        window.open(ResumePdf, '_blank', 'noopener,noreferrer');
+        setStartWindowOpen(false);
+    };
+
     const [lastActive, setLastActive] = useState('');
 
     useEffect(() => {
@@ -51,16 +78,18 @@ const Toolbar: React.FC<ToolbarProps> = ({
 
     const [time, setTime] = useState(getTime());
 
-    const updateTime = () => {
-        setTime(getTime());
-        setTimeout(() => {
-            updateTime();
-        }, 5000);
-    };
+    useEffect(() => {
+        const tick = () => setTime(getTime());
+        tick();
+        const intervalId = window.setInterval(tick, 5000);
+        return () => window.clearInterval(intervalId);
+    }, []);
 
     useEffect(() => {
-        updateTime();
-    });
+        const onResize = () => setViewportWidth(window.innerWidth);
+        window.addEventListener('resize', onResize);
+        return () => window.removeEventListener('resize', onResize);
+    }, []);
 
     const onCheckClick = () => {
         if (lastClickInside.current) {
@@ -96,28 +125,197 @@ const Toolbar: React.FC<ToolbarProps> = ({
             {startWindowOpen && (
                 <div
                     onMouseDown={onStartWindowClicked}
-                    style={styles.startWindow}
+                    style={Object.assign(
+                        {},
+                        styles.startMenuXp,
+                        isCompact && styles.startWindowCompact
+                    )}
                 >
-                    <div style={styles.startWindowInner}>
-                        <div style={styles.verticalStartContainer}>
-                            <p style={styles.verticalText}>HeffernanOS</p>
+                    <div style={styles.startMenuXpInner}>
+                        <div style={styles.startMenuHeader}>
+                            <img
+                                src={startAvatar}
+                                alt=""
+                                style={styles.startMenuAvatar}
+                                onError={(e) => {
+                                    (e.currentTarget as HTMLImageElement).style.display = 'none';
+                                }}
+                            />
+                            <div style={styles.startMenuName}>Le Thanh An</div>
                         </div>
-                        <div style={styles.startWindowContent}>
-                            <div style={styles.startMenuSpace} />
-                            <div style={styles.startMenuLine} />
-                            <div
-                                className="start-menu-option"
-                                style={styles.startMenuOption}
-                                onMouseDown={shutdown}
+
+                        <div style={styles.startMenuColumns}>
+                            <div style={styles.startMenuLeft}>
+                                {shortcuts.slice(0, 7).map((s) => (
+                                    <div
+                                        key={s.shortcutName}
+                                        style={Object.assign(
+                                            {},
+                                            styles.startMenuItem,
+                                            hoveredStartItem ===
+                                                `left:${s.shortcutName}` &&
+                                                styles.startMenuItemHover
+                                        )}
+                                        onMouseEnter={() =>
+                                            setHoveredStartItem(
+                                                `left:${s.shortcutName}`
+                                            )
+                                        }
+                                        onMouseLeave={() =>
+                                            setHoveredStartItem(null)
+                                        }
+                                        onMouseDown={() => {
+                                            s.onOpen?.();
+                                            setStartWindowOpen(false);
+                                        }}
+                                    >
+                                        <Icon
+                                            style={styles.startMenuItemIcon}
+                                            icon={s.icon}
+                                        />
+                                        <div style={styles.startMenuItemTextWrap}>
+                                            <div style={styles.startMenuItemTitle}>
+                                                {s.shortcutName}
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                                <div style={styles.startMenuAllPrograms}>
+                                    <div style={styles.startMenuAllProgramsText}>
+                                        All Programs
+                                    </div>
+                                    <div style={styles.startMenuAllProgramsArrow} />
+                                </div>
+                            </div>
+
+                            <div style={styles.startMenuRight}>
+                                <div
+                                    style={Object.assign(
+                                        {},
+                                        styles.startMenuItemRight,
+                                        hoveredStartItem === 'right:instagram' &&
+                                            styles.startMenuItemHover
+                                    )}
+                                    onMouseEnter={() =>
+                                        setHoveredStartItem('right:instagram')
+                                    }
+                                    onMouseLeave={() => setHoveredStartItem(null)}
+                                    onMouseDown={() =>
+                                        onOpenExternal(
+                                            'https://www.instagram.com/'
+                                        )
+                                    }
+                                >
+                                    <Icon
+                                        style={styles.startMenuItemIconSmall}
+                                        icon="contactInstagram"
+                                    />
+                                    <div style={styles.startMenuItemTitle}>Instagram</div>
+                                </div>
+                                <div
+                                    style={Object.assign(
+                                        {},
+                                        styles.startMenuItemRight,
+                                        hoveredStartItem === 'right:github' &&
+                                            styles.startMenuItemHover
+                                    )}
+                                    onMouseEnter={() =>
+                                        setHoveredStartItem('right:github')
+                                    }
+                                    onMouseLeave={() => setHoveredStartItem(null)}
+                                    onMouseDown={() =>
+                                        onOpenExternal('https://github.com/')
+                                    }
+                                >
+                                    <Icon
+                                        style={styles.startMenuItemIconSmall}
+                                        icon="contactGithub"
+                                    />
+                                    <div style={styles.startMenuItemTitle}>Github</div>
+                                </div>
+                                <div
+                                    style={Object.assign(
+                                        {},
+                                        styles.startMenuItemRight,
+                                        hoveredStartItem === 'right:linkedin' &&
+                                            styles.startMenuItemHover
+                                    )}
+                                    onMouseEnter={() =>
+                                        setHoveredStartItem('right:linkedin')
+                                    }
+                                    onMouseLeave={() => setHoveredStartItem(null)}
+                                    onMouseDown={() =>
+                                        onOpenExternal(
+                                            'https://www.linkedin.com/'
+                                        )
+                                    }
+                                >
+                                    <Icon
+                                        style={styles.startMenuItemIconSmall}
+                                        icon="contactLinkedin"
+                                    />
+                                    <div style={styles.startMenuItemTitle}>LinkedIn</div>
+                                </div>
+
+                                <div style={styles.startMenuRightDivider} />
+
+                                <div
+                                    style={Object.assign(
+                                        {},
+                                        styles.startMenuItemRight,
+                                        hoveredStartItem === 'right:resume' &&
+                                            styles.startMenuItemHover
+                                    )}
+                                    onMouseEnter={() =>
+                                        setHoveredStartItem('right:resume')
+                                    }
+                                    onMouseLeave={() => setHoveredStartItem(null)}
+                                    onMouseDown={onOpenResume}
+                                >
+                                    <Icon
+                                        style={styles.startMenuItemIconSmall}
+                                        icon="myResume"
+                                    />
+                                    <div style={styles.startMenuItemTitle}>My Resume</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style={styles.startMenuFooter}>
+                            <button
+                                type="button"
+                                style={styles.startMenuFooterButton}
+                                onMouseDown={() => {
+                                    minimizeAll();
+                                    setStartWindowOpen(false);
+                                }}
                             >
                                 <Icon
-                                    style={styles.startMenuIcon}
-                                    icon="computerBig"
+                                    icon="logoffButton"
+                                    size={26}
+                                    style={styles.startMenuFooterButtonIcon}
                                 />
-                                <p style={styles.startMenuText}>
-                                    Sh<u>u</u>t down...
-                                </p>
-                            </div>
+                                <span style={styles.startMenuFooterButtonText}>
+                                    Log Off
+                                </span>
+                            </button>
+                            <button
+                                type="button"
+                                style={styles.startMenuFooterButton}
+                                onMouseDown={() => {
+                                    setStartWindowOpen(false);
+                                    shutdown();
+                                }}
+                            >
+                                <Icon
+                                    icon="shutdownButton"
+                                    size={26}
+                                    style={styles.startMenuFooterButtonIcon}
+                                />
+                                <span style={styles.startMenuFooterButtonText}>
+                                    Shut Down
+                                </span>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -149,7 +347,9 @@ const Toolbar: React.FC<ToolbarProps> = ({
                                     style={styles.startIcon}
                                 />
                             )}
-                            <span style={styles.startLabel}>Start</span>
+                            {!isCompact && (
+                                <span style={styles.startLabel}>Start</span>
+                            )}
                         </span>
                     </button>
                     <div style={styles.toolbarTabsContainer}>
@@ -160,6 +360,8 @@ const Toolbar: React.FC<ToolbarProps> = ({
                                     style={Object.assign(
                                         {},
                                         styles.tabContainerOuter,
+                                        isTablet && styles.tabContainerOuterTablet,
+                                        isCompact && styles.tabContainerOuterCompact,
                                         lastActive === key &&
                                             !windows[key].minimized &&
                                             styles.activeTabOuter
@@ -189,8 +391,16 @@ const Toolbar: React.FC<ToolbarProps> = ({
                         })}
                     </div>
                 </div>
-                <div style={styles.time}>
-                    <Icon style={styles.volumeIcon} icon="volumeOn" />
+                <div
+                    style={Object.assign(
+                        {},
+                        styles.time,
+                        isCompact && styles.timeCompact
+                    )}
+                >
+                    {!isCompact && (
+                        <Icon style={styles.volumeIcon} icon="volumeOn" />
+                    )}
                     <p style={styles.timeText}>{time}</p>
                 </div>
             </div>
@@ -214,82 +424,241 @@ const styles: StyleSheetCSS = {
         zIndex: 100000,
         display: 'flex',
     },
-    verticalStartContainer: {
-        // width: 30,
-        height: '100%',
-        background: Colors.darkGray,
-    },
-    verticalText: {
-        fontFamily: 'Terminal',
-        textOrientation: 'sideways',
-        fontSize: 32,
-        padding: 4,
-        paddingBottom: 64,
-        paddingTop: 8,
-        letterSpacing: 1,
-        color: Colors.lightGray,
-        transform: 'scale(-1)',
-        WebkitTransform: 'scale(-1)',
-        MozTransform: 'scale(-1)',
-        msTransform: 'scale(-1)',
-        OTransform: 'scale(-1)',
-        // @ts-ignore
-        writingMode: 'tb-rl',
-    },
-    startWindowContent: {
-        flex: 1,
-        flexDirection: 'column',
-        justifyContent: 'flex-end',
-        // alignItems: 'flex-end',
-    },
-    startWindow: {
+    startMenuXp: {
         position: 'absolute',
-        bottom: 28,
+        bottom: 30,
         display: 'flex',
         flex: 1,
-        width: 256,
-        // height: 400,
-        left: 4,
+        width: 380,
+        height: 470,
+        left: 0,
         boxSizing: 'border-box',
         border: `1px solid ${Colors.white}`,
         borderBottomColor: Colors.black,
         borderRightColor: Colors.black,
-        background: Colors.lightGray,
+        background: '#dbeafe',
+        borderRadius: 10,
+        overflow: 'hidden',
+        boxShadow:
+            '0px 18px 38px rgba(0,0,0,0.35), inset 0px 0px 0px 1px rgba(0,0,0,0.18)',
+    },
+    startWindowCompact: {
+        left: 0,
+        right: 4,
+        width: 'auto',
+        height: 'min(470px, calc(100vh - 68px))',
+        maxWidth: 'calc(100vw - 4px)',
+    },
+    startMenuXpInner: {
+        display: 'flex',
+        flexDirection: 'column',
+        flex: 1,
+        backgroundImage:
+            'linear-gradient(180deg, rgba(243,244,246,1) 0%, rgba(229,231,235,1) 100%)',
+    },
+    startMenuHeader: {
+        height: 64,
+        paddingLeft: 12,
+        paddingRight: 12,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 10,
+        backgroundImage:
+            'linear-gradient(180deg, rgba(38,123,206,1) 0%, rgba(16,89,170,1) 100%)',
+        borderBottom: '1px solid rgba(255,255,255,0.35)',
+        boxShadow:
+            'inset 0px 1px 0px rgba(255,255,255,0.35), inset 0px -1px 0px rgba(0,0,0,0.20)',
+    },
+    startMenuAvatar: {
+        width: 40,
+        height: 40,
+        borderRadius: 8,
+        border: '2px solid rgba(255,255,255,0.80)',
+        boxSizing: 'border-box',
+        objectFit: 'cover',
+        background: '#93c5fd',
+        boxShadow:
+            '0px 2px 6px rgba(0,0,0,0.25), inset 0px 1px 0px rgba(255,255,255,0.35)',
+    },
+    startMenuName: {
+        fontFamily: 'Tahoma',
+        fontSize: 18,
+        fontWeight: 700,
+        color: Colors.white,
+        textShadow: '1px 1px 0px rgba(0,0,0,0.45)',
+        userSelect: 'none',
+    },
+    startMenuColumns: {
+        display: 'flex',
+        flex: 1,
+        padding: 0.5,
+        gap: 1,
+        background: 'transparent',
+        boxSizing: 'border-box',
+        minHeight: 0,
+    },
+    startMenuLeft: {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 2,
+        flex: 1,
+        background: Colors.white,
+        borderRadius: 10,
+        border: '1px solid rgba(0,0,0,0.14)',
+        padding: 10,
+        boxSizing: 'border-box',
+        overflowY: 'auto',
+        scrollbarWidth: 'thin',
+        scrollbarColor: 'rgba(0,0,0,0.35) transparent',
+        boxShadow:
+            '0px 2px 6px rgba(0,0,0,0.10), inset 0px 1px 0px rgba(255,255,255,0.70)',
+    },
+    startMenuRight: {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 2,
+        width: 160,
+        background: '#dbeafe',
+        borderRadius: 10,
+        border: '1px solid rgba(0,0,0,0.14)',
+        padding: 10,
+        boxSizing: 'border-box',
+        overflowY: 'auto',
+        scrollbarWidth: 'thin',
+        scrollbarColor: 'rgba(0,0,0,0.35) transparent',
+        boxShadow:
+            '0px 2px 6px rgba(0,0,0,0.10), inset 0px 1px 0px rgba(255,255,255,0.55)',
+    },
+    startMenuRightDivider: {
+        height: 1,
+        background: 'rgba(0,0,0,0.12)',
+        marginTop: 10,
+        marginBottom: 10,
+    },
+    startMenuItem: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: 10,
+        padding: '8px 8px',
+        borderRadius: 8,
+        cursor: 'pointer',
+        width: '100%',
+        boxSizing: 'border-box',
+        minHeight: 44,
+        transition: 'background 120ms ease, outline 120ms ease',
+    },
+    startMenuItemRight: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: 8,
+        padding: '8px 8px',
+        borderRadius: 8,
+        cursor: 'pointer',
+        width: '100%',
+        boxSizing: 'border-box',
+        minHeight: 40,
+        transition: 'background 120ms ease, outline 120ms ease',
+    },
+    startMenuItemHover: {
+        backgroundImage:
+            'linear-gradient(180deg, rgba(191,219,254,0.75) 0%, rgba(147,197,253,0.45) 100%)',
+        outline: '1px solid rgba(37, 99, 235, 0.40)',
+    },
+    startMenuItemIcon: {
+        width: 32,
+        height: 32,
+        flexShrink: 0,
+    },
+    startMenuItemIconSmall: {
+        width: 22,
+        height: 22,
+        flexShrink: 0,
+    },
+    startMenuItemTextWrap: {
+        minWidth: 0,
+        display: 'flex',
+        flexDirection: 'column',
+    },
+    startMenuItemTitle: {
+        fontFamily: 'Tahoma',
+        fontSize: 14,
+        fontWeight: 700,
+        color: '#111827',
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        userSelect: 'none',
+        lineHeight: '18px',
+    },
+    startMenuAllPrograms: {
+        marginTop: 'auto',
+        paddingTop: 12,
+        borderTop: '1px solid rgba(0,0,0,0.09)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        gap: 8,
+        fontFamily: 'Tahoma',
+        fontSize: 14,
+        fontWeight: 700,
+        userSelect: 'none',
+        cursor: 'default',
+    },
+    startMenuAllProgramsText: {
+        color: '#111827',
+    },
+    startMenuAllProgramsArrow: {
+        width: 0,
+        height: 0,
+        borderTop: '7px solid transparent',
+        borderBottom: '7px solid transparent',
+        borderLeft: '10px solid #16a34a',
+    },
+    startMenuFooter: {
+        height: 40,
+        display: 'flex',
+        justifyContent: 'flex-end',
+        alignItems: 'center',
+        gap: 10,
+        paddingLeft: 10,
+        paddingRight: 10,
+        backgroundImage:
+            'linear-gradient(180deg, rgba(38,123,206,1) 0%, rgba(16,89,170,1) 100%)',
+        borderTop: '1px solid rgba(0,0,0,0.22)',
+        boxShadow:
+            'inset 0px 1px 0px rgba(255,255,255,0.25), inset 0px -1px 0px rgba(0,0,0,0.25)',
+    },
+    startMenuFooterButton: {
+        border: 'none',
+        background: 'transparent',
+        color: Colors.white,
+        borderRadius: 4,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        gap: 6,
+        padding: '0 6px',
+        height: 28,
+        width: 'auto',
+        cursor: 'pointer',
+        boxShadow: 'none',
+    },
+    startMenuFooterButtonIcon: {
+        filter: 'drop-shadow(0px 1px 0px rgba(0,0,0,0.35))',
+    },
+    startMenuFooterButtonText: {
+        fontFamily: 'Tahoma',
+        fontSize: 12,
+        fontWeight: 700,
+        userSelect: 'none',
+        color: Colors.white,
+        textShadow: '1px 1px 0px rgba(0,0,0,0.35)',
     },
     activeTabOuter: {
         border: '1px solid rgba(12, 64, 150, 0.75)',
         borderBottomColor: 'rgba(255,255,255,0.6)',
         borderRightColor: 'rgba(255,255,255,0.6)',
         backgroundColor: '#2f6edc',
-    },
-    startWindowInner: {
-        border: `1px solid ${Colors.lightGray}`,
-        borderBottomColor: Colors.darkGray,
-        borderRightColor: Colors.darkGray,
-        flex: 1,
-    },
-    startMenuIcon: {
-        width: 32,
-        height: 32,
-    },
-    startMenuText: {
-        fontSize: 14,
-        fontFamily: 'MSSerif',
-        marginLeft: 8,
-    },
-    startMenuOption: {
-        alignItems: 'center',
-        // flex: 1,
-        height: 24,
-        padding: 12,
-    },
-    startMenuSpace: {
-        flex: 1,
-    },
-    startMenuLine: {
-        height: 1,
-        background: Colors.white,
-        borderTop: `1px solid ${Colors.darkGray}`,
     },
     activeTabInner: {
         border: '1px solid rgba(255,255,255,0.45)',
@@ -303,8 +672,9 @@ const styles: StyleSheetCSS = {
     },
     tabContainerOuter: {
         display: 'flex',
-        flex: 1,
-        maxWidth: 300,
+        flex: '0 0 auto',
+        width: 220,
+        maxWidth: 260,
         marginRight: 4,
         boxSizing: 'border-box',
         cursor: 'pointer',
@@ -315,6 +685,14 @@ const styles: StyleSheetCSS = {
         backgroundColor: '#3b82f6',
         boxShadow:
             '2px 0px 2px rgba(0,0,0,0.07), inset 1.5px 1.5px 1px rgba(255,255,255,0.25), inset 0px 4px 8px rgba(255,255,255,0.15), inset -2px -2px 2px rgba(0,0,0,0.10)',
+    },
+    tabContainerOuterTablet: {
+        width: 170,
+        maxWidth: 200,
+    },
+    tabContainerOuterCompact: {
+        width: 130,
+        maxWidth: 160,
     },
     tabContainer: {
         display: 'flex',
@@ -335,7 +713,7 @@ const styles: StyleSheetCSS = {
         border: 'none',
         padding: 0,
         backgroundColor: 'transparent',
-        width: 96,
+        width: 'clamp(56px, 18vw, 96px)',
         height: 28,
         backgroundImage: `url(${startButton})`,
         backgroundRepeat: 'no-repeat',
@@ -377,6 +755,10 @@ const styles: StyleSheetCSS = {
         display: 'flex',
         alignItems: 'center',
         height: '100%',
+        minWidth: 0,
+        overflowX: 'auto',
+        overflowY: 'hidden',
+        flexWrap: 'nowrap',
     },
     startIcon: {
         marginRight: 0,
@@ -394,6 +776,7 @@ const styles: StyleSheetCSS = {
         height: '100%',
         display: 'flex',
         flexDirection: 'row',
+        minWidth: 0,
     },
     toolbar: {
         flexGrow: 1,
@@ -401,10 +784,11 @@ const styles: StyleSheetCSS = {
         height: '100%',
         alignItems: 'center',
         display: 'flex',
+        minWidth: 0,
     },
     time: {
         flexShrink: 1,
-        width: 92,
+        width: 'clamp(64px, 20vw, 92px)',
         height: 22,
         boxSizing: 'border-box',
         marginRight: 6,
@@ -420,6 +804,12 @@ const styles: StyleSheetCSS = {
         borderLeftColor: Colors.darkGray,
         marginTop: 2,
         display: 'flex',
+    },
+    timeCompact: {
+        width: 'clamp(52px, 26vw, 84px)',
+        paddingLeft: 8,
+        paddingRight: 8,
+        justifyContent: 'center',
     },
     volumeIcon: {
         cursor: 'pointer',
